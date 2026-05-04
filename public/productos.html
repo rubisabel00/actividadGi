@@ -4,39 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productos - Mi Sitio Web</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../src/styles/style.css">
+
+    <style>
+        .card img { height: 200px; object-fit: cover; }
+    </style>
 </head>
 <body>
 
-    <!-- Navegación -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="../index.html"><strong>Mi Sitio Web</strong></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="../index.html">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="servicios.html">Servicios</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="productos.html">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contactos.html">Contactos</a></li>
-                </ul>
+<!-- NAV -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="../index.html"><strong>Mi Sitio Web</strong></a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="productos-hero py-5 text-white text-center">
+    <div class="container">
+        <h1 class="fw-bold">Nuestros Productos</h1>
+    </div>
+</section>
+
+<!-- 🔍 BUSCADOR (TUYO) -->
+<div class="container mt-4">
+    <input type="text" id="buscador" class="form-control" placeholder="Buscar producto...">
+</div>
+
+<!-- FILTROS -->
+<div class="bg-light py-3 mt-3">
+    <div class="container text-center">
+        <button class="btn btn-primary filtro-btn" data-filter="todos">Todos</button>
+        <button class="btn btn-outline-secondary filtro-btn" data-filter="software">Software</button>
+        <button class="btn btn-outline-secondary filtro-btn" data-filter="hardware">Hardware</button>
+    </div>
+</div>
+
+<!-- PRODUCTOS DINÁMICOS -->
+<div class="container py-5">
+    <div class="row" id="contenedor-productos"></div>
+</div>
+
+<!-- 🛒 CARRITO (TUYO) -->
+<div class="container">
+    <h3>🛒 Carrito</h3>
+    <ul id="carrito" class="list-group mb-3"></ul>
+    <p><strong>Total: $<span id="total">0</span></strong></p>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-dark text-white text-center py-4 mt-5">
+    <p>&copy; 2026 Mi Sitio Web</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// 🔥 TUS PRODUCTOS DINÁMICOS
+const productos = [
+    { id: 1, nombre: "Software Pro", precio: 120000, categoria:"software" },
+    { id: 2, nombre: "PC Gamer", precio: 500000, categoria:"hardware" },
+    { id: 3, nombre: "Antivirus", precio: 30000, categoria:"software" }
+];
+
+let carrito = [];
+
+// MOSTRAR
+function mostrarProductos(lista){
+    const cont = document.getElementById("contenedor-productos");
+    cont.innerHTML = "";
+
+    lista.forEach(p=>{
+        cont.innerHTML += `
+        <div class="col-md-4 mb-4 producto-item" data-categoria="${p.categoria}">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>${p.nombre}</h5>
+                    <p>$${p.precio}</p>
+                    <button class="btn btn-primary" onclick="agregar(${p.id})">Agregar</button>
+                </div>
             </div>
-        </div>
-    </nav>
+        </div>`;
+    });
+}
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-4 mt-5">
-        <div class="container">
-            <p class="mb-0">&copy; 2026 Mi Sitio Web. Todos los derechos reservados.</p>
-            <small>Desarrollado con HTML, CSS, JavaScript y Bootstrap</small>
-        </div>
-    </footer>
+// CARRITO
+function agregar(id){
+    const prod = productos.find(p=>p.id===id);
+    carrito.push(prod);
+    actualizar();
+}
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+function actualizar(){
+    const lista = document.getElementById("carrito");
+    let total=0;
+    lista.innerHTML="";
+
+    carrito.forEach(p=>{
+        lista.innerHTML+=`<li class="list-group-item">${p.nombre} - $${p.precio}</li>`;
+        total+=p.precio;
+    });
+
+    document.getElementById("total").textContent=total;
+}
+
+// BUSCADOR
+document.getElementById("buscador").addEventListener("input", e=>{
+    const t = e.target.value.toLowerCase();
+    mostrarProductos(productos.filter(p=>p.nombre.toLowerCase().includes(t)));
+});
+
+// FILTROS
+document.querySelectorAll('.filtro-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+        const f = btn.dataset.filter;
+        mostrarProductos(f==="todos"?productos:productos.filter(p=>p.categoria===f));
+    });
+});
+
+// INIT
+mostrarProductos(productos);
+</script>
 
 </body>
 </html>
